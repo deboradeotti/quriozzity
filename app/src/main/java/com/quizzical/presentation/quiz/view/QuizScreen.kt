@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -30,11 +31,25 @@ fun QuizScreen(
 
     LaunchedEffect(key1 = Unit) { viewModel.sendAction(QuizAction.Action.OnInit) }
 
-    Scaffold {
+    Scaffold(
+        topBar = { QuizTopBar(Modifier) },
+        bottomBar = { QuizBottomBar(Modifier) }
+    ) {
         paddingValues ->
         QuizContent(uiState = uiState, modifier = Modifier.padding(paddingValues))
     }
 }
+
+@Composable
+fun QuizTopBar(
+    modifier: Modifier = Modifier,
+) {
+    Text(
+        text = "Quizzical",
+        modifier = modifier.padding(16.dp)
+    )
+}
+
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -67,6 +82,18 @@ fun QuizContent(
                 }
             }
         }
+    }
+}
+
+@Composable
+fun QuizBottomBar(
+    modifier: Modifier = Modifier,
+) {
+    Button(
+        onClick = { /* Handle submit action */ },
+        modifier = modifier.padding(16.dp)
+    ) {
+        Text(text = "Submit")
     }
 }
 
