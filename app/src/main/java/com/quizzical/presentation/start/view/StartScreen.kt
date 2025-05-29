@@ -10,8 +10,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.quizzical.R
+import androidx.compose.material3.MaterialTheme
 
 @Composable
 fun StartScreen(
@@ -29,10 +32,21 @@ fun StartScreen(
             verticalArrangement = Arrangement.SpaceBetween,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(text = "Quizzical")
-            Text(text = "How much can you score in this trivia quiz?")
+            Text(
+                text = stringResource(R.string.app_name),
+                style = MaterialTheme.typography.headlineLarge,
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
+            Text(
+                text = stringResource(R.string.start_screen_welcome_message),
+                style = MaterialTheme.typography.bodyLarge,
+                modifier = Modifier.padding(bottom = 64.dp)
+            )
             Button(onClick = onClickStart) {
-                Text(text = "Start quiz")
+                Text(
+                    text = stringResource(R.string.start_screen_button),
+                    style = MaterialTheme.typography.titleMedium
+                )
             }
         }
     }

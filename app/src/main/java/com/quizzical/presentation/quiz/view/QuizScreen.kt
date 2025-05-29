@@ -5,7 +5,7 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.Button
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -60,7 +60,7 @@ fun QuizContent(
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     options.forEach { option ->
-                        Button(onClick = { /* select */ }) {
+                        OutlinedButton(onClick = { /* select */ }) {
                             Text(text = option)
                         }
                     }

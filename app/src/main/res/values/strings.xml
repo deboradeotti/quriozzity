@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">Quizzical</string>
+
+    <!--Start screen -->
+    <string name="start_screen_welcome_message">"How much can you score in this trivia quiz?"</string>
+    <string name="start_screen_button">Start quiz!</string>
+
+    <!-- Quiz screen -->
 </resources>
