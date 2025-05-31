@@ -1,11 +1,23 @@
 package com.quizzical.presentation.start.view
 
+import android.annotation.SuppressLint
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -15,47 +27,164 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.quizzical.R
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
+import com.quizzical.presentation.start.viewmodel.StartViewModel
+import com.quizzical.presentation.start.action.StartAction
+import com.quizzical.presentation.start.effect.StartUiEffect
+import org.koin.androidx.compose.koinViewModel
+
+val CustomYellow = Color(0xFFFFF9EA)
+val CustomBlue = Color(0xFF293264)
+val Kavoon = FontFamily(Font(R.font.kavoon_regular))
+val InterRegular = FontFamily(Font(R.font.inter_regular))
+val InterMedium = FontFamily(Font(R.font.inter_medium))
 
 @Composable
 fun StartScreen(
     modifier: Modifier = Modifier,
+    viewModel: StartViewModel = koinViewModel(),
     onClickStart: () -> Unit
 ) {
-    Column(
+    Effects(viewModel, onClickStart)
+
+    StartContent(
+        modifier.fillMaxSize(),
+    ) { viewModel.sendAction(StartAction.Action.OnClickStart) }
+
+}
+
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+@Composable
+fun StartContent(
+    modifier: Modifier = Modifier,
+    onClickStart: () -> Unit
+) {
+    Box(
         modifier = modifier
             .fillMaxSize()
-            .padding(24.dp),
-        verticalArrangement = Arrangement.Center
+            .background(CustomYellow)
     ) {
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.SpaceBetween,
-            horizontalAlignment = Alignment.CenterHorizontally
+        Image(
+            painter = painterResource(R.drawable.green_blob),
+            contentDescription = null,
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .size(600.dp)
+                .offset(y = (-200).dp)
+                .zIndex(0f)
+        )
+        Image(
+            painter = painterResource(R.drawable.red_blob),
+            contentDescription = null,
+            modifier = Modifier
+                .align(Alignment.BottomStart)
+                .size(500.dp)
+                .offset(y = (200).dp)
+                .zIndex(0f)
+        )
+        Scaffold(
+            containerColor = Color.Transparent,
+            topBar = { StartTopBar() },
+            modifier = Modifier.zIndex(1f)
         ) {
-            Text(
-                text = stringResource(R.string.app_name),
-                style = MaterialTheme.typography.headlineLarge,
-                modifier = Modifier.padding(bottom = 16.dp)
-            )
-            Text(
-                text = stringResource(R.string.start_screen_welcome_message),
-                style = MaterialTheme.typography.bodyLarge,
-                modifier = Modifier.padding(bottom = 64.dp)
-            )
-            Button(onClick = onClickStart) {
-                Text(
-                    text = stringResource(R.string.start_screen_button),
-                    style = MaterialTheme.typography.titleMedium
-                )
+            Column(
+                modifier = modifier
+                    .fillMaxSize(),
+                verticalArrangement = Arrangement.Center
+            ) {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.SpaceBetween,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+
+                    Text(
+                        text = stringResource(R.string.app_name),
+                        style = MaterialTheme.typography.headlineLarge.copy(
+                            fontFamily = Kavoon,
+                            fontSize = 56.sp
+                        ),
+                        color = CustomBlue,
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    )
+                    Text(
+                        text = stringResource(R.string.start_screen_welcome_message),
+                        style = MaterialTheme.typography.bodyLarge.copy(
+                            fontFamily = InterRegular,
+                            fontSize = 16.sp
+                        ),
+                        color = CustomBlue,
+                        modifier = Modifier.padding(bottom = 64.dp)
+                    )
+                    Button(
+                        onClick = onClickStart,
+                        colors = ButtonColors(
+                            containerColor = CustomBlue,
+                            contentColor = Color.White,
+                            disabledContainerColor = CustomBlue,
+                            disabledContentColor = Color.White
+                        )
+                    ) {
+                        Text(
+                            text = stringResource(R.string.start_screen_button),
+                            style = MaterialTheme.typography.titleMedium.copy(
+                                fontFamily = InterMedium,
+                                fontSize = 18.sp
+                            )
+                        )
+                    }
+                }
             }
         }
     }
 }
 
-@Preview(showBackground = true, showSystemUi = true)
+@Composable
+fun StartTopBar() {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        horizontalArrangement = Arrangement.End
+    ) {
+        IconButton(
+            onClick = { /* ação */ }
+        ) {
+            Icon(
+                imageVector = Icons.Outlined.Info,
+                contentDescription = stringResource(R.string.start_screen_info_button_description),
+                tint = MaterialTheme.colorScheme.secondary
+            )
+        }
+    }
+}
+
+@Composable
+fun Effects(
+    viewModel: StartViewModel,
+    onClickStart: () -> Unit
+) {
+    LaunchedEffect(Unit) {
+        viewModel.uiEffect.collect {
+            when (it) {
+                is StartUiEffect.NavigateToQuiz -> onClickStart()
+                StartUiEffect.NavigateToInfo -> TODO()
+            }
+        }
+    }
+}
+
+@Preview(showBackground = true)
 @Composable
 fun StartScreenPreview() {
-    StartScreen(
-        onClickStart = {}
-    )
+    StartContent(
+        modifier = Modifier.fillMaxSize()
+    ) {}
 }
