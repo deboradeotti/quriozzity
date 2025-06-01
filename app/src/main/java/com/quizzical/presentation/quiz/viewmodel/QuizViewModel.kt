@@ -18,6 +18,11 @@ class QuizViewModel(
     override fun sendAction(action: QuizAction.Action) {
         when (action) {
             is QuizAction.Action.OnInit -> fetchQuestions()
+            QuizAction.Action.OnClickCheckAnswers -> TODO()
+            is QuizAction.Action.OnClickSelectOption -> onClickSelectOption(
+                questionIndex = action.questionIndex,
+                optionIndex = action.optionIndex
+            )
         }
     }
 
@@ -31,5 +36,24 @@ class QuizViewModel(
                 _uiState.value = QuizUiState(emptyList()) // Reset to empty list on error
             }
         }
+    }
+
+    private fun onClickSelectOption(questionIndex: Int, optionIndex: Int) {
+        val currentQuestions = _uiState.value.quizQuestions.toMutableList()
+        if (questionIndex in currentQuestions.indices) {
+            val question = currentQuestions[questionIndex]
+            val updatedQuestion = question.copy(selectedOptionIndex = optionIndex)
+            currentQuestions[questionIndex] = updatedQuestion
+            _uiState.value = QuizUiState(currentQuestions)
+        }
+
+        checkButtonState()
+    }
+
+    private fun checkButtonState() {
+        val allAnswered = _uiState.value.quizQuestions.all { it.selectedOptionIndex != null }
+        _uiState.value = _uiState.value.copy(
+            isCheckAnswersButtonEnabled = allAnswered
+        )
     }
 }

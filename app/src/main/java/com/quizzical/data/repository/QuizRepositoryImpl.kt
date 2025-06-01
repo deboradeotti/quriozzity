@@ -17,9 +17,6 @@ class QuizRepositoryImpl(
             )
 
             QuestionModel(
-                type = questionDTO.type,
-                difficulty = questionDTO.difficulty,
-                category = questionDTO.category,
                 question = questionDTO.question,
                 correctAnswer = questionDTO.correctAnswer,
                 options = options
