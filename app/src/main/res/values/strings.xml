@@ -1,4 +1,6 @@
 <resources>
+    <!-- General -->
+    <string name="app_name_display">Quriozzity</string>
     <string name="app_name">quriozzity</string>
 
     <!--Start screen -->
