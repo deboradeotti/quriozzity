@@ -7,4 +7,5 @@
     <string name="start_screen_info_button_description">Info</string>
 
     <!-- Quiz screen -->
+    <string name="quiz_screen_check_button">Check answers</string>
 </resources>

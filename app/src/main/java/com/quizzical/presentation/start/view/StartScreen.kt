@@ -31,20 +31,17 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import com.quizzical.presentation.start.viewmodel.StartViewModel
 import com.quizzical.presentation.start.action.StartAction
 import com.quizzical.presentation.start.effect.StartUiEffect
+import com.quizzical.ui.theme.AppTypography.InterMedium
+import com.quizzical.ui.theme.AppTypography.InterRegular
+import com.quizzical.ui.theme.AppTypography.Kavoon
+import com.quizzical.ui.theme.ColorPalette.CustomBlue
+import com.quizzical.ui.theme.ColorPalette.CustomYellow
 import org.koin.androidx.compose.koinViewModel
-
-val CustomYellow = Color(0xFFFFF9EA)
-val CustomBlue = Color(0xFF293264)
-val Kavoon = FontFamily(Font(R.font.kavoon_regular))
-val InterRegular = FontFamily(Font(R.font.inter_regular))
-val InterMedium = FontFamily(Font(R.font.inter_medium))
 
 @Composable
 fun StartScreen(
