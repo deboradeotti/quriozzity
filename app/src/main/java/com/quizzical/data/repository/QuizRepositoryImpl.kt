@@ -1,5 +1,6 @@
 package com.quizzical.data.repository
 
+import androidx.core.text.HtmlCompat
 import com.quizzical.data.datasource.api.ApiService
 import com.quizzical.domain.repository.QuizRepository
 import com.quizzical.domain.model.QuestionModel
@@ -17,9 +18,9 @@ class QuizRepositoryImpl(
             )
 
             QuestionModel(
-                question = questionDTO.question,
-                correctAnswer = questionDTO.correctAnswer,
-                options = options
+                question = decodeHtmlEntities(questionDTO.question),
+                correctAnswer = decodeHtmlEntities(questionDTO.correctAnswer),
+                options = options.map { decodeHtmlEntities(it) }
             )
         }
     }
@@ -32,5 +33,9 @@ class QuizRepositoryImpl(
         options.add(correctOption)
         options.shuffle()
         return options
+    }
+
+    private fun decodeHtmlEntities(text: String): String {
+        return HtmlCompat.fromHtml(text, HtmlCompat.FROM_HTML_MODE_LEGACY).toString()
     }
 }
