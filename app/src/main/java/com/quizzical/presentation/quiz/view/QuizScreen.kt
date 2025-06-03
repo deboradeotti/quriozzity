@@ -27,13 +27,14 @@ import androidx.compose.ui.unit.sp
 import com.quizzical.R
 import com.quizzical.domain.model.QuestionModel
 import com.quizzical.presentation.quiz.action.QuizAction
-import com.quizzical.presentation.quiz.state.QuizUiState
+import com.quizzical.presentation.quiz.model.QuizUiModel
 import com.quizzical.presentation.quiz.viewmodel.QuizViewModel
 import com.quizzical.ui.theme.AppTypography
 import com.quizzical.ui.theme.ColorPalette
 import com.quizzical.ui.theme.QuizzicalTheme
 import org.koin.androidx.compose.koinViewModel
 import androidx.compose.foundation.lazy.itemsIndexed
+import com.quizzical.presentation.quiz.state.QuizUiState
 
 @Composable
 fun QuizScreen(
@@ -51,7 +52,8 @@ fun QuizScreen(
                 questionIndex = questionIndex,
                 optionIndex = optionIndex
             ))},
-        onClickCheckAnswers = { viewModel.sendAction(QuizAction.Action.OnClickCheckAnswers) }
+        onClickCheckAnswers = { viewModel.sendAction(QuizAction.Action.OnClickCheckAnswers) },
+        onClickRestartQuiz = { viewModel.sendAction(QuizAction.Action.OnClickRestart) }
     )
 }
 
@@ -80,52 +82,88 @@ fun QuizTopBar(
 @Composable
 fun QuizContent(
     uiState: QuizUiState,
-    modifier: Modifier = Modifier,
     onClickSelectOption: (Int, Int) -> Unit,
-    onClickCheckAnswers: () -> Unit
+    onClickCheckAnswers: () -> Unit,
+    onClickRestartQuiz: () -> Unit
 ) {
     Scaffold(
         topBar = { QuizTopBar(Modifier) },
-        bottomBar = { QuizBottomBar(Modifier, onClickCheckAnswers, uiState.isCheckAnswersButtonEnabled) },
+        bottomBar = {
+            when (uiState) {
+                is QuizUiState.Resumed -> QuizResumedBottomBar(
+                    modifier = Modifier.padding(8.dp),
+                    onClickCheckAnswers = onClickCheckAnswers,
+                    isCheckAnswersButtonEnabled = uiState.uiModel.isCheckAnswersButtonEnabled
+                )
+
+                is QuizUiState.Result -> QuizResultBottomBar(
+                    modifier = Modifier.padding(8.dp).fillMaxWidth(),
+                    onClickRestartQuiz = onClickRestartQuiz,
+                    score = uiState.uiModel.score
+                )
+            }
+        },
         containerColor = ColorPalette.CustomYellow
     ) { paddingValues ->
-        LazyColumn(modifier = modifier.padding(paddingValues)) {
-            itemsIndexed(uiState.quizQuestions, key = { index, _ -> index }) { questionIndex, quizQuestion ->
-                Text(
-                    text = quizQuestion.question,
-                    modifier = Modifier.padding(16.dp),
-                    fontFamily = AppTypography.InterRegular,
-                    color = ColorPalette.CustomBlue,
-                    fontSize = 16.sp
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(paddingValues)
+        ) {
+            when (uiState) {
+                is QuizUiState.Resumed -> QuizResumedContent(
+                    uiModel = uiState.uiModel,
+                    onClickSelectOption = onClickSelectOption
                 )
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    quizQuestion.options.forEachIndexed { optionIndex, option ->
-                        val isSelected = quizQuestion.selectedOptionIndex == optionIndex
-                        OutlinedButton(
-                            onClick = { onClickSelectOption(questionIndex, optionIndex) },
-                            border = BorderStroke(
-                                width = if (isSelected) 1.5.dp else 0.dp,
-                                color = if (isSelected) ColorPalette.CustomBlue else ColorPalette.LightBlue
-                            ),
-                            colors = ButtonColors(
-                                containerColor = ColorPalette.LightBlue,
-                                contentColor = ColorPalette.CustomBlue,
-                                disabledContainerColor = ColorPalette.LightBlue,
-                                disabledContentColor = ColorPalette.CustomBlue
-                            ),
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            Text(
-                                text = option,
-                                fontFamily = AppTypography.InterBold,
-                                fontSize = 16.sp,
-                            )
-                        }
+                is QuizUiState.Result -> {
+                    QuizResultContent(
+                        uiModel = uiState.uiModel
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun QuizResumedContent(
+    uiModel: QuizUiModel,
+    onClickSelectOption: (Int, Int) -> Unit
+) {
+    LazyColumn {
+        itemsIndexed(uiModel.quizQuestions, key = { index, _ -> index }) { questionIndex, quizQuestion ->
+            Text(
+                text = quizQuestion.question,
+                modifier = Modifier.padding(16.dp),
+                fontFamily = AppTypography.InterRegular,
+                color = ColorPalette.CustomBlue,
+                fontSize = 16.sp
+            )
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                quizQuestion.options.forEachIndexed { optionIndex, option ->
+                    val isSelected = quizQuestion.selectedOptionIndex == optionIndex
+                    OutlinedButton(
+                        onClick = { onClickSelectOption(questionIndex, optionIndex) },
+                        border = BorderStroke(
+                            width = 1.5.dp,
+                            color = if (isSelected) ColorPalette.CustomBlue else ColorPalette.LightBlue
+                        ),
+                        colors = quizButtonColors(
+                            backgroundColor = ColorPalette.LightBlue,
+                            contentColor = ColorPalette.CustomBlue
+                        ),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(
+                            text = option,
+                            fontFamily = AppTypography.InterBold,
+                            fontSize = 16.sp,
+                        )
                     }
                 }
             }
@@ -134,23 +172,75 @@ fun QuizContent(
 }
 
 @Composable
-fun QuizBottomBar(
+fun QuizResultContent(
+    uiModel: QuizUiModel
+) {
+    LazyColumn {
+        itemsIndexed(uiModel.quizQuestions, key = { index, _ -> index }) { _, quizQuestion ->
+            Text(
+                text = quizQuestion.question,
+                modifier = Modifier.padding(16.dp),
+                fontFamily = AppTypography.InterRegular,
+                color = ColorPalette.CustomBlue,
+                fontSize = 16.sp
+            )
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                quizQuestion.options.forEachIndexed { _, option ->
+                    val isSelected = quizQuestion.selectedOptionIndex != null && quizQuestion.options.indexOf(option) == quizQuestion.selectedOptionIndex
+                    val isCorrect = option == quizQuestion.correctAnswer
+                    option != quizQuestion.correctAnswer && isSelected
+                    Button(
+                        enabled = false,
+                        colors = quizButtonColors(
+                            backgroundColor = when {
+                                isCorrect -> ColorPalette.CustomGreen
+                                isSelected -> ColorPalette.CustomRed
+                                else -> ColorPalette.LightBlue
+                            },
+                            contentColor = ColorPalette.CustomBlue
+                        ),
+                        modifier = Modifier.fillMaxWidth(),
+                        onClick = { /* No action needed for result display */ }
+                    ) {
+                        Text(
+                            text = option,
+                            fontFamily = AppTypography.InterBold,
+                            fontSize = 16.sp,
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun QuizResumedBottomBar(
     modifier: Modifier = Modifier,
     onClickCheckAnswers: () -> Unit,
     isCheckAnswersButtonEnabled: Boolean
 ) {
     Row(
-        modifier = modifier.fillMaxWidth().padding(8.dp)
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(8.dp)
     ) {
         Button(
-            onClick = { onClickCheckAnswers },
-            modifier = modifier.padding(16.dp).fillMaxWidth(),
-            colors = ButtonColors(
-                containerColor = if (isCheckAnswersButtonEnabled) ColorPalette.CustomBlue else Color.Gray,
-                contentColor = Color.White,
-                disabledContainerColor = ColorPalette.CustomBlue,
-                disabledContentColor = Color.White
-            )
+            onClick = onClickCheckAnswers,
+            modifier = modifier
+                .padding(16.dp)
+                .fillMaxWidth(),
+            colors = quizButtonColors(
+                backgroundColor =
+                    if (isCheckAnswersButtonEnabled)
+                        ColorPalette.CustomBlue else Color.Gray,
+                contentColor = Color.White
+            ),
         ) {
             Text(
                 text = stringResource(R.string.quiz_screen_check_button),
@@ -162,20 +252,84 @@ fun QuizBottomBar(
     }
 }
 
+@Composable
+fun QuizResultBottomBar(
+    modifier: Modifier = Modifier,
+    onClickRestartQuiz: () -> Unit,
+    score: Int
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(8.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = "You scored $score/5!",
+            fontFamily = AppTypography.InterBold,
+            color = ColorPalette.CustomBlue,
+            fontSize = 20.sp
+        )
+        Button(
+            onClick = onClickRestartQuiz,
+            modifier = modifier
+                .padding(16.dp)
+                .fillMaxWidth(),
+            colors = quizButtonColors(
+                backgroundColor = ColorPalette.CustomBlue,
+                contentColor = Color.White
+            ),
+        ) {
+            Text(
+                text = stringResource(R.string.quiz_screen_restart_button),
+                fontFamily = AppTypography.InterBold,
+                fontSize = 16.sp,
+                modifier = Modifier.padding(8.dp)
+            )
+        }
+    }
+}
+
+@Composable
+fun quizButtonColors(
+    backgroundColor: Color,
+    contentColor: Color = ColorPalette.CustomBlue
+): ButtonColors = ButtonColors(
+    containerColor = backgroundColor,
+    contentColor = contentColor,
+    disabledContainerColor = backgroundColor,
+    disabledContentColor = contentColor
+)
+
 @Preview(showBackground = true)
 @Composable
-fun QuizScreenPreview() {
+fun QuizScreenResumedPreview() {
     QuizzicalTheme {
         QuizContent(
-            mockUiState(),
+            QuizUiState.Resumed(mockUiModel()),
             onClickSelectOption = {_, _ -> /* No action needed for preview */ },
-            onClickCheckAnswers = { /* No action needed for preview */ }
+            onClickCheckAnswers = { /* No action needed for preview */ },
+            onClickRestartQuiz = { /* No action needed for preview */ }
         )
     }
 }
 
-private fun mockUiState(): QuizUiState {
-    return QuizUiState(
+@Preview(showBackground = true)
+@Composable
+fun QuizScreenResultPreview() {
+    QuizzicalTheme {
+        QuizContent(
+            QuizUiState.Result(mockUiModel()),
+            onClickSelectOption = {_, _ -> /* No action needed for preview */ },
+            onClickCheckAnswers = { /* No action needed for preview */ },
+            onClickRestartQuiz = { /* No action needed for preview */ }
+        )
+    }
+}
+
+private fun mockUiModel(): QuizUiModel {
+    return QuizUiModel(
         quizQuestions = listOf(
             QuestionModel(
                 question = "What is the capital of France?",

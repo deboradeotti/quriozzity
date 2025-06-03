@@ -10,4 +10,5 @@
 
     <!-- Quiz screen -->
     <string name="quiz_screen_check_button">Check answers</string>
+    <string name="quiz_screen_restart_button">Try again</string>
 </resources>

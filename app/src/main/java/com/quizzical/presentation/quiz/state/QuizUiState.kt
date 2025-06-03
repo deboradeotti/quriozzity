@@ -1,8 +1,8 @@
 package com.quizzical.presentation.quiz.state
 
-import com.quizzical.domain.model.QuestionModel
+import com.quizzical.presentation.quiz.model.QuizUiModel
 
-data class QuizUiState(
-    val quizQuestions: List<QuestionModel>,
-    val isCheckAnswersButtonEnabled: Boolean = false
-)
+sealed class QuizUiState {
+    data class Resumed(var uiModel: QuizUiModel) : QuizUiState()
+    data class Result(var uiModel: QuizUiModel) : QuizUiState()
+}

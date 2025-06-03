@@ -6,5 +6,6 @@ fun interface QuizAction {
         data object OnInit : Action()
         data class OnClickSelectOption(val questionIndex: Int, val optionIndex: Int) : Action()
         data object OnClickCheckAnswers : Action()
+        data object OnClickRestart : Action()
     }
 }
