@@ -4,6 +4,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -34,6 +35,10 @@ import com.quizzical.ui.theme.ColorPalette
 import com.quizzical.ui.theme.QuizzicalTheme
 import org.koin.androidx.compose.koinViewModel
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.CheckCircle
+import androidx.compose.material3.Icon
+import androidx.compose.ui.res.painterResource
 import com.quizzical.presentation.quiz.state.QuizUiState
 
 @Composable
@@ -193,7 +198,6 @@ fun QuizResultContent(
                 quizQuestion.options.forEachIndexed { _, option ->
                     val isSelected = quizQuestion.selectedOptionIndex != null && quizQuestion.options.indexOf(option) == quizQuestion.selectedOptionIndex
                     val isCorrect = option == quizQuestion.correctAnswer
-                    option != quizQuestion.correctAnswer && isSelected
                     Button(
                         enabled = false,
                         colors = quizButtonColors(
@@ -207,11 +211,35 @@ fun QuizResultContent(
                         modifier = Modifier.fillMaxWidth(),
                         onClick = { /* No action needed for result display */ }
                     ) {
-                        Text(
-                            text = option,
-                            fontFamily = AppTypography.InterBold,
-                            fontSize = 16.sp,
-                        )
+                        Box(Modifier.fillMaxWidth()) {
+                            Text(
+                                text = option,
+                                fontFamily = AppTypography.InterBold,
+                                fontSize = 16.sp,
+                                modifier = Modifier.align(Alignment.Center),
+                            )
+                            if (isSelected) {
+                                if (isCorrect) {
+                                    Icon(
+                                        imageVector = Icons.Rounded.CheckCircle,
+                                        contentDescription = null,
+                                        tint = ColorPalette.CustomBlue,
+                                        modifier = Modifier
+                                            .align(Alignment.CenterEnd)
+                                            .padding(start = 8.dp)
+                                    )
+                                } else {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.ic_cancel),
+                                        contentDescription = null,
+                                        tint = ColorPalette.CustomBlue,
+                                        modifier = Modifier
+                                            .align(Alignment.CenterEnd)
+                                            .padding(start = 8.dp)
+                                    )
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -261,7 +289,7 @@ fun QuizResultBottomBar(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(8.dp),
+            .padding(24.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -273,9 +301,6 @@ fun QuizResultBottomBar(
         )
         Button(
             onClick = onClickRestartQuiz,
-            modifier = modifier
-                .padding(16.dp)
-                .fillMaxWidth(),
             colors = quizButtonColors(
                 backgroundColor = ColorPalette.CustomBlue,
                 contentColor = Color.White
@@ -285,7 +310,7 @@ fun QuizResultBottomBar(
                 text = stringResource(R.string.quiz_screen_restart_button),
                 fontFamily = AppTypography.InterBold,
                 fontSize = 16.sp,
-                modifier = Modifier.padding(8.dp)
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
             )
         }
     }
@@ -341,6 +366,7 @@ private fun mockUiModel(): QuizUiModel {
                 question = "What is the chemical symbol for water?",
                 options = listOf("H2O", "CO2", "O2", "NaCl"),
                 correctAnswer = "H2O",
+                selectedOptionIndex = 0
             )
         )
     )
