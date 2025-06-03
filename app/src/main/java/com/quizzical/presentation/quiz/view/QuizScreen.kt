@@ -1,16 +1,12 @@
 package com.quizzical.presentation.quiz.view
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -35,11 +31,9 @@ import com.quizzical.ui.theme.ColorPalette
 import com.quizzical.ui.theme.QuizzicalTheme
 import org.koin.androidx.compose.koinViewModel
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.CheckCircle
-import androidx.compose.material3.Icon
-import androidx.compose.ui.res.painterResource
 import com.quizzical.presentation.quiz.state.QuizUiState
+import com.quizzical.presentation.quiz.view.component.QuizQuestionComponent
+import com.quizzical.presentation.quiz.view.utils.quizButtonColors
 
 @Composable
 fun QuizScreen(
@@ -75,7 +69,7 @@ fun QuizTopBar(
     ) {
         Text(
             text = stringResource(R.string.app_name),
-            modifier = modifier.padding(top = 32.dp, bottom = 8.dp),
+            modifier = Modifier.padding(top = 32.dp, bottom = 8.dp),
             fontFamily = AppTypography.Kavoon,
             color = ColorPalette.CustomBlue,
             textAlign = TextAlign.Center,
@@ -137,41 +131,16 @@ fun QuizResumedContent(
 ) {
     LazyColumn {
         itemsIndexed(uiModel.quizQuestions, key = { index, _ -> index }) { questionIndex, quizQuestion ->
-            Text(
-                text = quizQuestion.question,
-                modifier = Modifier.padding(16.dp),
-                fontFamily = AppTypography.InterRegular,
-                color = ColorPalette.CustomBlue,
-                fontSize = 16.sp
-            )
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                quizQuestion.options.forEachIndexed { optionIndex, option ->
-                    val isSelected = quizQuestion.selectedOptionIndex == optionIndex
-                    OutlinedButton(
-                        onClick = { onClickSelectOption(questionIndex, optionIndex) },
-                        border = BorderStroke(
-                            width = 1.5.dp,
-                            color = if (isSelected) ColorPalette.CustomBlue else ColorPalette.LightBlue
-                        ),
-                        colors = quizButtonColors(
-                            backgroundColor = ColorPalette.LightBlue,
-                            contentColor = ColorPalette.CustomBlue
-                        ),
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Text(
-                            text = option,
-                            fontFamily = AppTypography.InterBold,
-                            fontSize = 16.sp,
-                        )
-                    }
+            QuizQuestionComponent(
+                question = quizQuestion.question,
+                options = quizQuestion.options,
+                selectedOptionIndex = quizQuestion.selectedOptionIndex,
+                correctAnswer = quizQuestion.correctAnswer,
+                isResult = false,
+                onOptionClick = { optionIndex ->
+                    onClickSelectOption(questionIndex, optionIndex)
                 }
-            }
+            )
         }
     }
 }
@@ -182,67 +151,13 @@ fun QuizResultContent(
 ) {
     LazyColumn {
         itemsIndexed(uiModel.quizQuestions, key = { index, _ -> index }) { _, quizQuestion ->
-            Text(
-                text = quizQuestion.question,
-                modifier = Modifier.padding(16.dp),
-                fontFamily = AppTypography.InterRegular,
-                color = ColorPalette.CustomBlue,
-                fontSize = 16.sp
+            QuizQuestionComponent(
+                question = quizQuestion.question,
+                options = quizQuestion.options,
+                selectedOptionIndex = quizQuestion.selectedOptionIndex,
+                correctAnswer = quizQuestion.correctAnswer,
+                isResult = true
             )
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                quizQuestion.options.forEachIndexed { _, option ->
-                    val isSelected = quizQuestion.selectedOptionIndex != null && quizQuestion.options.indexOf(option) == quizQuestion.selectedOptionIndex
-                    val isCorrect = option == quizQuestion.correctAnswer
-                    Button(
-                        enabled = false,
-                        colors = quizButtonColors(
-                            backgroundColor = when {
-                                isCorrect -> ColorPalette.CustomGreen
-                                isSelected -> ColorPalette.CustomRed
-                                else -> ColorPalette.LightBlue
-                            },
-                            contentColor = ColorPalette.CustomBlue
-                        ),
-                        modifier = Modifier.fillMaxWidth(),
-                        onClick = { /* No action needed for result display */ }
-                    ) {
-                        Box(Modifier.fillMaxWidth()) {
-                            Text(
-                                text = option,
-                                fontFamily = AppTypography.InterBold,
-                                fontSize = 16.sp,
-                                modifier = Modifier.align(Alignment.Center),
-                            )
-                            if (isSelected) {
-                                if (isCorrect) {
-                                    Icon(
-                                        imageVector = Icons.Rounded.CheckCircle,
-                                        contentDescription = null,
-                                        tint = ColorPalette.CustomBlue,
-                                        modifier = Modifier
-                                            .align(Alignment.CenterEnd)
-                                            .padding(start = 8.dp)
-                                    )
-                                } else {
-                                    Icon(
-                                        painter = painterResource(id = R.drawable.ic_cancel),
-                                        contentDescription = null,
-                                        tint = ColorPalette.CustomBlue,
-                                        modifier = Modifier
-                                            .align(Alignment.CenterEnd)
-                                            .padding(start = 8.dp)
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
-            }
         }
     }
 }
@@ -315,17 +230,6 @@ fun QuizResultBottomBar(
         }
     }
 }
-
-@Composable
-fun quizButtonColors(
-    backgroundColor: Color,
-    contentColor: Color = ColorPalette.CustomBlue
-): ButtonColors = ButtonColors(
-    containerColor = backgroundColor,
-    contentColor = contentColor,
-    disabledContainerColor = backgroundColor,
-    disabledContentColor = contentColor
-)
 
 @Preview(showBackground = true)
 @Composable
