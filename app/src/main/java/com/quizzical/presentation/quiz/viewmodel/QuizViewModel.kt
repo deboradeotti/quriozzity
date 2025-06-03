@@ -25,17 +25,18 @@ class QuizViewModel(
                 optionIndex = action.optionIndex
             )
             QuizAction.Action.OnClickRestart -> onClickRestart()
+            QuizAction.Action.OnClickTryAgain -> onClickRestart()
         }
     }
 
     private fun fetchQuestions() {
+        _uiState.value = QuizUiState.Loading
         viewModelScope.launch {
             try {
                 val quizQuestions = getQuestionsUseCase()
                 _uiState.value = QuizUiState.Resumed(QuizUiModel(quizQuestions))
             } catch (e: Exception) {
-                // Handle error, e.g., log it or show a message to the user
-                _uiState.value = QuizUiState.Resumed(QuizUiModel(emptyList())) // Reset to empty list on error
+                _uiState.value = QuizUiState.Error
             }
         }
     }

@@ -3,6 +3,7 @@ package com.quizzical.presentation.quiz.view
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -31,6 +32,7 @@ import com.quizzical.ui.theme.ColorPalette
 import com.quizzical.ui.theme.QuizzicalTheme
 import org.koin.androidx.compose.koinViewModel
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material3.CircularProgressIndicator
 import com.quizzical.presentation.quiz.state.QuizUiState
 import com.quizzical.presentation.quiz.view.component.QuizQuestionComponent
 import com.quizzical.presentation.quiz.view.utils.quizButtonColors
@@ -52,7 +54,8 @@ fun QuizScreen(
                 optionIndex = optionIndex
             ))},
         onClickCheckAnswers = { viewModel.sendAction(QuizAction.Action.OnClickCheckAnswers) },
-        onClickRestartQuiz = { viewModel.sendAction(QuizAction.Action.OnClickRestart) }
+        onClickRestartQuiz = { viewModel.sendAction(QuizAction.Action.OnClickRestart) },
+        onClickRetry = { viewModel.sendAction(QuizAction.Action.OnClickTryAgain) }
     )
 }
 
@@ -83,12 +86,14 @@ fun QuizContent(
     uiState: QuizUiState,
     onClickSelectOption: (Int, Int) -> Unit,
     onClickCheckAnswers: () -> Unit,
-    onClickRestartQuiz: () -> Unit
+    onClickRestartQuiz: () -> Unit,
+    onClickRetry: () -> Unit
 ) {
     Scaffold(
         topBar = { QuizTopBar(Modifier) },
         bottomBar = {
             when (uiState) {
+                is QuizUiState.Loading -> Unit
                 is QuizUiState.Resumed -> QuizResumedBottomBar(
                     modifier = Modifier.padding(8.dp),
                     onClickCheckAnswers = onClickCheckAnswers,
@@ -100,6 +105,10 @@ fun QuizContent(
                     onClickRestartQuiz = onClickRestartQuiz,
                     score = uiState.uiModel.score
                 )
+                is QuizUiState.Error -> QuizErrorBottomBar(
+                    onClickRetry = onClickRetry,
+                    modifier = Modifier.padding(8.dp)
+                )
             }
         },
         containerColor = ColorPalette.CustomYellow
@@ -110,6 +119,7 @@ fun QuizContent(
                 .padding(paddingValues)
         ) {
             when (uiState) {
+                is QuizUiState.Loading -> QuizLoadingContent()
                 is QuizUiState.Resumed -> QuizResumedContent(
                     uiModel = uiState.uiModel,
                     onClickSelectOption = onClickSelectOption
@@ -119,6 +129,7 @@ fun QuizContent(
                         uiModel = uiState.uiModel
                     )
                 }
+                is QuizUiState.Error -> QuizErrorContent()
             }
         }
     }
@@ -159,6 +170,42 @@ fun QuizResultContent(
                 isResult = true
             )
         }
+    }
+}
+
+@Composable
+fun QuizLoadingContent() {
+    Row(
+        modifier = Modifier
+            .fillMaxHeight()
+            .fillMaxWidth()
+            .padding(16.dp),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        CircularProgressIndicator(
+            color = ColorPalette.CustomBlue
+        )
+    }
+}
+
+@Composable
+fun QuizErrorContent() {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .fillMaxHeight()
+            .padding(24.dp),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = stringResource(R.string.quiz_screen_error_message),
+            fontFamily = AppTypography.InterRegular,
+            fontSize = 16.sp,
+            color = ColorPalette.CustomBlue,
+            textAlign = TextAlign.Center
+        )
     }
 }
 
@@ -219,13 +266,43 @@ fun QuizResultBottomBar(
             colors = quizButtonColors(
                 backgroundColor = ColorPalette.CustomBlue,
                 contentColor = Color.White
-            ),
+            )
         ) {
             Text(
                 text = stringResource(R.string.quiz_screen_restart_button),
                 fontFamily = AppTypography.InterBold,
                 fontSize = 16.sp,
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+            )
+        }
+    }
+}
+
+@Composable
+fun QuizErrorBottomBar(
+    modifier: Modifier = Modifier,
+    onClickRetry: () -> Unit
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(8.dp)
+    ) {
+        Button(
+            onClick = onClickRetry,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            colors = quizButtonColors(
+                backgroundColor = ColorPalette.CustomBlue,
+                contentColor = Color.White
+            ),
+        ) {
+            Text(
+                text = stringResource(R.string.quiz_screen_try_again_button),
+                fontFamily = AppTypography.InterBold,
+                fontSize = 16.sp,
+                modifier = Modifier.padding(8.dp)
             )
         }
     }
@@ -239,7 +316,8 @@ fun QuizScreenResumedPreview() {
             QuizUiState.Resumed(mockUiModel()),
             onClickSelectOption = {_, _ -> /* No action needed for preview */ },
             onClickCheckAnswers = { /* No action needed for preview */ },
-            onClickRestartQuiz = { /* No action needed for preview */ }
+            onClickRestartQuiz = { /* No action needed for preview */ },
+            onClickRetry = { /* No action needed for preview */ }
         )
     }
 }
@@ -252,7 +330,36 @@ fun QuizScreenResultPreview() {
             QuizUiState.Result(mockUiModel()),
             onClickSelectOption = {_, _ -> /* No action needed for preview */ },
             onClickCheckAnswers = { /* No action needed for preview */ },
-            onClickRestartQuiz = { /* No action needed for preview */ }
+            onClickRestartQuiz = { /* No action needed for preview */ },
+            onClickRetry = { /* No action needed for preview */ }
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun QuizScreenLoadingPreview() {
+    QuizzicalTheme {
+        QuizContent(
+            QuizUiState.Loading,
+            onClickSelectOption = {_, _ -> /* No action needed for preview */ },
+            onClickCheckAnswers = { /* No action needed for preview */ },
+            onClickRestartQuiz = { /* No action needed for preview */ },
+            onClickRetry = { /* No action needed for preview */ }
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun QuizScreenErrorPreview() {
+    QuizzicalTheme {
+        QuizContent(
+            QuizUiState.Error,
+            onClickSelectOption = {_, _ -> /* No action needed for preview */ },
+            onClickCheckAnswers = { /* No action needed for preview */ },
+            onClickRestartQuiz = { /* No action needed for preview */ },
+            onClickRetry = { /* No action needed for preview */ }
         )
     }
 }

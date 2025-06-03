@@ -11,4 +11,7 @@
     <!-- Quiz screen -->
     <string name="quiz_screen_check_button">Check answers</string>
     <string name="quiz_screen_restart_button">Try again</string>
+    <string name="quiz_screen_loading_message">Loading questions…</string>
+    <string name="quiz_screen_error_message">An error occurred while loading questions. Try again later.</string>
+    <string name="quiz_screen_try_again_button">Try again</string>
 </resources>
