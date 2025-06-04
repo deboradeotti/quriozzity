@@ -8,6 +8,25 @@
     <string name="start_screen_button">Start quiz</string>
     <string name="start_screen_info_button_description">Info</string>
 
+    <!-- About screen -->
+    <string name="about_screen_title">About</string>
+    <string name="about_screen_app_info_title">App Information</string>
+    <string name="about_screen_app_info_version_title">Version</string>
+    <string name="about_screen_app_info_version_value">1.0.0</string>
+    <string name="about_screen_app_info_description_title">Description</string>
+    <string name="about_screen_app_info_description">Quriozzity is a simple trivia quiz app, designed to test your knowledge across a variety of categories. Developed using Native Android with Kotlin and Jetpack Compose.</string>
+    <string name="about_screen_api_title">Open Trivia Database</string>
+    <string name="about_screen_api_datasource_title">Data Source</string>
+    <string name="about_screen_api_datasource_description">This app uses trivia questions sourced from the %1$s – a free-to-use, community-driven API for trivia content. We gratefully acknowledge their contribution and commitment to providing open-access knowledge. All questions are used under the Creative Commons Attribution-ShareAlike 4.0 International License (CC BY-SA 4.0).</string>
+    <string name="about_screen_api_datasource_link">https://opentdb.com</string>
+    <string name="about_screen_contact_title">Contact</string>
+    <string name="about_screen_contact_github_title">github.com/deboradeotti/</string>
+    <string name="about_screen_contact_github_link">https://github.com/deboradeotti/</string>
+    <string name="about_screen_contact_linkedin_title">linkedin.com/in/deboradeotti/</string>
+    <string name="about_screen_contact_linkedin_link">https://linkedin.com/in/deboradeotti/</string>
+    <string name="about_screen_contact_email_title">debora.deotti@gmail.com</string>
+    <string name="about_screen_contact_email_link">mailto:debora.deotti@gmail.com</string>
+
     <!-- Quiz screen -->
     <string name="quiz_screen_check_button">Check answers</string>
     <string name="quiz_screen_restart_button">Try again</string>

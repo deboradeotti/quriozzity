@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.quizzical.presentation.about.view.AboutScreen
 import com.quizzical.presentation.start.view.StartScreen
 import com.quizzical.presentation.quiz.view.QuizScreen
 
@@ -11,7 +12,13 @@ import com.quizzical.presentation.quiz.view.QuizScreen
 fun AppNavHost() {
     val navController = rememberNavController()
     NavHost(navController, startDestination = "start") {
-        composable(route="start") { StartScreen(onClickStart = { navController.navigate("quiz")}) }
-        composable("quiz") { QuizScreen() }
+        composable(route="start") {
+            StartScreen(
+                onClickStart = { navController.navigate("quiz") },
+                onClickAbout = { navController.navigate("about") }
+            )
+        }
+        composable(route = "about") { AboutScreen { navController.navigateUp() } }
+        composable(route = "quiz") { QuizScreen() }
     }
 }

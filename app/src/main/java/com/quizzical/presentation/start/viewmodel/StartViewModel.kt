@@ -18,19 +18,20 @@ class StartViewModel(
 
     override fun sendAction(action: StartAction.Action) {
         when (action) {
-            is StartAction.Action.OnInit -> {
-                // Handle initialization logic if needed
-            }
             is StartAction.Action.OnClickStart -> {
                 viewModelScope.launch { onClickStart() }
             }
-            is StartAction.Action.OnClickInfo -> {
-                // Handle info button click logic
+            is StartAction.Action.OnClickAbout -> {
+                viewModelScope.launch { onClickAbout() }
             }
         }
     }
 
     private suspend fun onClickStart() {
         _uiEffect.emit(StartUiEffect.NavigateToQuiz)
+    }
+
+    private suspend fun onClickAbout() {
+        _uiEffect.emit(StartUiEffect.NavigateToAbout)
     }
 }

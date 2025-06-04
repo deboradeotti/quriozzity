@@ -47,13 +47,16 @@ import org.koin.androidx.compose.koinViewModel
 fun StartScreen(
     modifier: Modifier = Modifier,
     viewModel: StartViewModel = koinViewModel(),
-    onClickStart: () -> Unit
+    onClickStart: () -> Unit,
+    onClickAbout: () -> Unit
 ) {
-    Effects(viewModel, onClickStart)
+    Effects(viewModel, onClickStart, onClickAbout)
 
     StartContent(
         modifier.fillMaxSize(),
-    ) { viewModel.sendAction(StartAction.Action.OnClickStart) }
+        onClickStart = { viewModel.sendAction(StartAction.Action.OnClickStart) },
+        onClickAbout = { viewModel.sendAction(StartAction.Action.OnClickAbout) }
+    )
 
 }
 
@@ -61,7 +64,8 @@ fun StartScreen(
 @Composable
 fun StartContent(
     modifier: Modifier = Modifier,
-    onClickStart: () -> Unit
+    onClickStart: () -> Unit,
+    onClickAbout: () -> Unit
 ) {
     Box(
         modifier = modifier
@@ -88,7 +92,7 @@ fun StartContent(
         )
         Scaffold(
             containerColor = Color.Transparent,
-            topBar = { StartTopBar() },
+            topBar = { StartTopBar(onClickAbout) },
             modifier = Modifier.zIndex(1f)
         ) {
             Column(
@@ -144,20 +148,23 @@ fun StartContent(
 }
 
 @Composable
-fun StartTopBar() {
+fun StartTopBar(
+    onClickAbout: () -> Unit
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp),
+            .padding(top = 32.dp, end = 16.dp),
         horizontalArrangement = Arrangement.End
     ) {
         IconButton(
-            onClick = { /* ação */ }
+            onClick = onClickAbout
         ) {
             Icon(
                 imageVector = Icons.Outlined.Info,
                 contentDescription = stringResource(R.string.start_screen_info_button_description),
-                tint = MaterialTheme.colorScheme.secondary
+                tint = MaterialTheme.colorScheme.secondary,
+                modifier = Modifier.size(28.dp)
             )
         }
     }
@@ -166,13 +173,14 @@ fun StartTopBar() {
 @Composable
 fun Effects(
     viewModel: StartViewModel,
-    onClickStart: () -> Unit
+    onClickStart: () -> Unit,
+    onClickAbout: () -> Unit
 ) {
     LaunchedEffect(Unit) {
         viewModel.uiEffect.collect {
             when (it) {
                 is StartUiEffect.NavigateToQuiz -> onClickStart()
-                StartUiEffect.NavigateToInfo -> TODO()
+                StartUiEffect.NavigateToAbout -> onClickAbout()
             }
         }
     }
@@ -182,6 +190,8 @@ fun Effects(
 @Composable
 fun StartScreenPreview() {
     StartContent(
-        modifier = Modifier.fillMaxSize()
-    ) {}
+        modifier = Modifier.fillMaxSize(),
+        onClickStart = {},
+        onClickAbout = {}
+    )
 }
