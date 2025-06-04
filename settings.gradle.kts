@@ -19,5 +19,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Quizzical"
+rootProject.name = "Quriozzity"
 include(":app")

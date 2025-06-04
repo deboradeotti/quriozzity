@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "com.quizzical"
+    namespace = "com.quriozzity"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.quizzical"
+        applicationId = "com.quriozzity"
         minSdk = 24
         targetSdk = 35
         versionCode = 1
