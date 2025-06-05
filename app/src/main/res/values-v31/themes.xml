@@ -2,6 +2,6 @@
 <resources>
 
     <style name="Theme.Quriozzity" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowSplashScreenBackground">@color/custom_yellow</item>
     </style>
-
 </resources>

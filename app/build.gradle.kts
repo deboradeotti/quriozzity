@@ -51,6 +51,9 @@ android {
 
 dependencies {
 
+    implementation(libs.androidx.core.splashscreen)
+    implementation(libs.material)
+    implementation(libs.material3)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
