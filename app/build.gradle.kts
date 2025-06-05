@@ -12,7 +12,7 @@ android {
         minSdk = 24
         targetSdk = 35
         versionCode = 1
-        versionName = "1.0"
+        versionName = "1.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -20,8 +20,18 @@ android {
         }
     }
 
+    signingConfigs {
+        create("release") {
+            storeFile = file("/Users/debora.deotti/my-release-key.jks")
+            storePassword = System.getenv("KEYSTORE_PASSWORD") ?: "dummyPassword"
+            keyAlias = "release"
+            keyPassword = System.getenv("KEY_PASSWORD") ?: "dummyPassword"
+        }
+    }
+
     buildTypes {
         release {
+            signingConfig = signingConfigs.getByName("release")
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
