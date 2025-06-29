@@ -1,6 +1,8 @@
 *.iml
 .gradle
 /local.properties
+# IDE files
+/.idea
 /.idea/caches
 /.idea/libraries
 /.idea/modules.xml
@@ -13,3 +15,8 @@
 .externalNativeBuild
 .cxx
 local.properties
+# Build
+/[Bb]uild/
+*.apk
+*.aab
+*.jar
