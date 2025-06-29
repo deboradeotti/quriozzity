@@ -31,9 +31,8 @@ This project is built with the following technologies and patterns:
 * **Architecture:** MVVM (Model-View-ViewModel) and MVI (Model-View-Intent) patterns for clean architecture and separation of concerns
 * **Asynchronicity:** [Kotlin Coroutines](https://developer.android.com/kotlin/coroutines)
 * **Networking:** [Retrofit](https://square.github.io/retrofit/) for consuming the Open Trivia DB API.
-* **Dependency Injection:** [Koin](https://kotlinlang.org/docs/koin-android.html) for managing dependencies.
+* **Dependency Injection:** [Koin](https://insert-koin.io/) for managing dependencies.
 * **Navigation:** [Compose Navigation](https://developer.android.com/jetpack/compose/navigation) for screen transitions.
-* **State Management:** [StateFlow](https://developer.android.com/kotlin/flow/stateflow) for managing UI state.
 
 ## 📚 Data Source (API)
 
