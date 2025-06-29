@@ -10,6 +10,12 @@ Quriozzity is an Android quiz application designed to test your knowledge with m
 
 ## 📸 Screenshots
 
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/cf1e8af0-c0a6-4c72-95c1-f82c230ff612" width="250">
+  <img src="https://github.com/user-attachments/assets/1d8af03d-d5ad-4320-bc1a-28600019531c" width="250">
+  <img src="https://github.com/user-attachments/assets/e93276a3-869e-4d24-b519-4cce09823b1d" width="250">
+</p>
+
 ## ✨ Features
 
 * **Interactive Quiz:** Answer multiple-choice questions.
@@ -49,7 +55,7 @@ Follow the steps below to set up and run the project on your local machine.
 
 1.  Clone the repository:
     ```sh
-    git clone [https://github.com/deboradeotti/quriozzity.git](https://github.com/deboradeotti/quriozzity.git)
+    git clone https://github.com/deboradeotti/quriozzity.git
     ```
 
 2.  Open the project in Android Studio.
