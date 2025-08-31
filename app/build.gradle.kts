@@ -3,6 +3,17 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android)
 }
 
+configurations.all {
+    resolutionStrategy {
+        val coroutinesVersion = libs.versions.kotlinxCoroutinesTest.get()
+        force("org.jetbrains.kotlin:kotlin-stdlib:${libs.versions.kotlin.get()}")
+        force("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
+        force("org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion")
+        force("org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion")
+        force("org.jetbrains.kotlinx:kotlinx-coroutines-test-jvm:$coroutinesVersion")
+    }
+}
+
 android {
     namespace = "com.quriozzity"
     compileSdk = 35
@@ -50,7 +61,7 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
+        kotlinCompilerExtensionVersion = libs.versions.composeCompiler.get()
     }
     packaging {
         resources {
@@ -62,8 +73,6 @@ android {
 dependencies {
 
     implementation(libs.androidx.core.splashscreen)
-    implementation(libs.material)
-    implementation(libs.material3)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -73,6 +82,9 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     testImplementation(libs.junit)
+    testImplementation(libs.mockk)
+    testImplementation(libs.kotlinx.coroutines.test.jvm)
+    testImplementation(libs.turbine)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))

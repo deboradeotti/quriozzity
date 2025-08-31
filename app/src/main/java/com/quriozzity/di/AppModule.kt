@@ -7,7 +7,7 @@ import com.quriozzity.data.repository.QuizRepositoryImpl
 import com.quriozzity.domain.usecase.GetQuestionsUseCase
 import com.quriozzity.presentation.quiz.viewmodel.QuizViewModel
 import com.quriozzity.presentation.start.viewmodel.StartViewModel
-import org.koin.core.module.dsl.viewModelOf
+import org.koin.androidx.viewmodel.dsl.viewModelOf
 import org.koin.dsl.module
 import retrofit2.Retrofit
 
